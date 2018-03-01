@@ -24,6 +24,12 @@ module.exports = function solveSudoku(matrix) {
             }
         }
 
+        for(var i=0; i<9; i+=3){  // метод поиска по квадратам
+            for(var j=0; j<9; j+=3){
+                solve_matrix = exception(solve_matrix,i,j);
+
+            }
+        }
 
         for(var n=0; n<9; n++){
             for(var m=0; m<9; m++){
@@ -31,13 +37,9 @@ module.exports = function solveSudoku(matrix) {
             }
         }
 
-    }
-    for(var i=0; i<9; i+=3){  // метод поиска по квадратам
-        for(var j=0; j<9; j+=3){
-            solve_matrix = exception(matrix,i,j);
 
-        }
     }
+
     return solve_matrix;
 }
 
@@ -89,7 +91,7 @@ function searching_in_square(matrix,number_line,number_column) {
 
                 if (matrix[i][j] === k) { // если числа k нету, то мы его записываем в кандидаты
 
-                    option_3[option_3.length] = k; // записали в массив кандидатов
+                    option_3.push(k); // записали в массив кандидатов
                 }
             }
         }
@@ -129,15 +131,16 @@ function exception (matrix,number_line,number_column) { // метод для к�
     var count_zero =0;
     for ( var i = number_line; i <= number_line + 2; i++  ){
         for (var j = number_column; j <= number_column + 2; j++){
-             if( matrix[i][j] === 0 ){
-                 count_zero++;
-                 var line_arr = searching_in_line(matrix, i);
-                 var column_arr = searching_in_column(matrix, j);
-                 var square_arr = searching_in_square(matrix, i, j);
-                 var option = options(line_arr, column_arr, square_arr);
-                 arr_1 = arr_1 + option.join(''); // добавляем значения в строку
+            if( matrix[i][j] === 0 ){
+                count_zero++;
+                var line_arr = searching_in_line(matrix, i);
+                var column_arr = searching_in_column(matrix, j);
+                var square_arr = searching_in_square(matrix, i, j);
+                var option = options(line_arr, column_arr, square_arr);
+                arr_1 = arr_1 + option.join(''); // добавляем значения в строку
 
-             }
+            }
+
         }
     }
 
@@ -164,9 +167,11 @@ function exception (matrix,number_line,number_column) { // метод для к�
                                 matrix[i][j] = n;
                             }
                         }
+
                     }
                 }
             }
+
 
         }
     }
