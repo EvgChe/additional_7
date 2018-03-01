@@ -1,4 +1,4 @@
-/*module.exports = */function solveSudoku(matrix) {
+module.exports = function solveSudoku(matrix) {
 
     var solve_matrix = []; // пустой массив для ввода окончательных решений
     for(var ii=0; ii<81; ii++) { // прокручиваем основные алгоритмы
@@ -138,7 +138,6 @@ function exception (matrix,number_line,number_column) { // метод для к�
                  arr_1 = arr_1 + option.join(''); // добавляем значения в строку
 
              }
-
         }
     }
 
@@ -165,11 +164,9 @@ function exception (matrix,number_line,number_column) { // метод для к�
                                 matrix[i][j] = n;
                             }
                         }
-
                     }
                 }
             }
-
 
         }
     }
@@ -179,20 +176,7 @@ function exception (matrix,number_line,number_column) { // метод для к�
 
 
 
-var array = [
-    [6, 5, 0, 7, 3, 0, 0, 8, 0],
-    [0, 0, 0, 4, 8, 0, 5, 3, 0],
-    [8, 4, 0, 9, 2, 5, 0, 0, 0],
-    [0, 9, 0, 8, 0, 0, 0, 0, 0],
-    [5, 3, 0, 2, 0, 9, 6, 0, 0],
-    [0, 0, 6, 0, 0, 0, 8, 0, 0],
-    [0, 0, 9, 0, 0, 0, 0, 0, 6],
-    [0, 0, 7, 0, 0, 0, 0, 5, 0],
-    [1, 6, 5, 3, 9, 0, 4, 7, 0]
 
-];
-
-console.log(solveSudoku(array));
 
 
 
