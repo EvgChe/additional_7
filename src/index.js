@@ -31,6 +31,31 @@ module.exports = function solveSudoku(matrix) {
             }
         }
 
+
+
+        for(var i=0; i<9; i++){  // по строкам
+            for(var j=0; j<9; j++){
+
+                solve_matrix = algoritm_3(solve_matrix ,i,j);
+
+            }
+        }
+
+
+        var solve_matrixT = transp(matrix);
+
+
+        for(var i=0; i<9; i++){  // транспорированная матрица
+            for(var j=0; j<9; j++){
+
+                solve_matrix = algoritm_3(solve_matrixT ,i,j);
+
+
+
+            }
+        }
+
+
         for(var n=0; n<9; n++){
             for(var m=0; m<9; m++){
                 matrix[n][m] = solve_matrix[n][m];
@@ -40,7 +65,9 @@ module.exports = function solveSudoku(matrix) {
 
     }
 
-    return solve_matrix;
+    var matrixT = transp(solve_matrix);
+
+    return matrixT;
 }
 
 function searching_in_line(matrix, number_line) {
@@ -163,7 +190,6 @@ function exception (matrix,number_line,number_column) { // метод для к�
                         var option = options(line_arr, column_arr, square_arr);
                         for (var m = 0; m < option.length; m++){
                             if ( option [m] === n){
-
                                 matrix[i][j] = n;
                             }
                         }
@@ -175,13 +201,95 @@ function exception (matrix,number_line,number_column) { // метод для к�
 
         }
     }
+
     return matrix;
+}
+
+function algoritm_3 (matrix, number_line, number_column) { //алгоритм для поиска по столбцам и строком методом исклучения
+
+    var arr_1=''; // строка со всеми решениями для всех нулей, для строки
+    var count_zero =0;
+    for ( var j = 0; j < 9; j++  ){
+
+        if( matrix[number_line][j] === 0 ){
+                count_zero++;
+                var line_arr = searching_in_line(matrix, number_line);
+                var column_arr = searching_in_column(matrix, j);
+                var square_arr = searching_in_square(matrix, number_line, j);
+                var option = options(line_arr, column_arr, square_arr);
+                arr_1 = arr_1 + option.join(''); // добавляем значения в строку
+        }
+    }
+
+    if(count_zero === 0){
+        return matrix;
+    }
+
+    for ( var n = 1; n <= 9; n++ ){
+
+        var length_new_arr = arr_1.split(String(n)).join('').length; // длинна нового массива после удаления n-го симв.
+        var length_arr = arr_1.length; // длинна исходной строки
+        if (length_arr - length_new_arr === 1){
+
+            for (var j = number_column; j <= number_column + 2; j++){
+                if( matrix[number_line][j] === 0 ){
+                    var line_arr = searching_in_line(matrix, number_line);
+                    var column_arr = searching_in_column(matrix, j);
+                    var square_arr = searching_in_square(matrix, number_line, j);
+                    var option = options(line_arr, column_arr, square_arr);
+                    for (var m = 0; m < option.length; m++){
+                        if ( option [m] === n){
+                                matrix[number_line][j] = n;
+                        }
+                    }
+
+                }
+            }
+
+        }
+    }
+return matrix;
+
+}
+
+function transp(matrix) { //транспорирование матрицы
+    var solve_matrixT = [];
+
+    for (var i=0; i < 9; i++) {
+
+        solve_matrixT [i] = [];
+
+        for (var j = 0; j < 9; j++) {
+
+            solve_matrixT[i][j] = matrix [j][i];
+
+        }
+    }
+
+    return solve_matrixT;
+
 }
 
 
 
 
-
+// var array = [
+//     [0, 5, 0, 4, 0, 0, 0, 1, 3],
+//     [0, 2, 6, 0, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 0, 0, 0, 9, 0],
+//     [0, 0, 0, 0, 8, 5, 6, 0, 0],
+//     [1, 0, 0, 0, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 6, 0, 0, 0, 0],
+//     [3, 0, 0, 1, 0, 0, 0, 0, 0],
+//     [0, 0, 7, 3, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 0, 0, 5, 0, 0]
+//
+//
+//
+//
+// ];
+//
+// console.log(solveSudoku(array));
 
 
 
