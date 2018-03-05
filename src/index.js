@@ -1,7 +1,58 @@
 module.exports = function solveSudoku(matrix) {
 
+    matrix = basic(matrix);
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// Перебор   /////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    var  bust_array = last(matrix);
+    var solve_matrix2 = [];
+    for(var i=0; i<9; i++){
+        solve_matrix2[i] = [];
+        for(var j=0; j<9; j++){
+            solve_matrix2[i][j] = matrix[i][j];
+        }
+    }
+
+    var number_variant = Math.pow(2, bust_array.length);
+
+    for(var n=0; n<number_variant; n++)
+    {
+        var string_variant = (n+number_variant).toString(2); // нужно bust_array.length нулей, а если мы запишем просто n, то при n=0 мы получим '0', а надо '100000'
+        for(i=0; i<bust_array.length; i++){
+            if(string_variant[i+1] == '0'){
+                solve_matrix2[bust_array[i][0]][bust_array[i][1]] = bust_array[i][2];
+            }
+            else if(string_variant[i+1] == '1'){
+                solve_matrix2[bust_array[i][0]][bust_array[i][1]] = bust_array[i][3];
+            }
+        }
+        solve_matrix2 = basic(solve_matrix2);
+
+        if (testMatrix(solve_matrix2)){
+            break;
+        }
+        else{
+            solve_matrix2 = [];
+            for(var i=0; i<9; i++){
+                solve_matrix2[i] = [];
+                for(var j=0; j<9; j++){
+                    solve_matrix2[i][j] = matrix[i][j];
+                }
+            }
+        }
+    }
+
+
+    return solve_matrix2;
+
+}
+
+function basic(matrix) {
     var solve_matrix = []; // пустой массив для ввода окончательных решений
-    for(var ii=0; ii<81; ii++) { // прокручиваем основные алгоритмы
+    for(var ii=0; ii<11; ii++) { // прокручиваем основные алгоритмы
         for (var i = 0; i < matrix.length; i++) { // поиск пустых ячеек
             solve_matrix[i] = []; // создание массива в массиве solve_matrix
             for (var j = 0; j <= 8; j++) {
@@ -68,7 +119,9 @@ module.exports = function solveSudoku(matrix) {
     var matrixT = transp(solve_matrix);
 
     return matrixT;
+
 }
+
 
 function searching_in_line(matrix, number_line) {
     var option_1 = []; // массива кандидатов 1
@@ -212,12 +265,12 @@ function algoritm_3 (matrix, number_line, number_column) { //алгоритм д
     for ( var j = 0; j < 9; j++  ){
 
         if( matrix[number_line][j] === 0 ){
-                count_zero++;
-                var line_arr = searching_in_line(matrix, number_line);
-                var column_arr = searching_in_column(matrix, j);
-                var square_arr = searching_in_square(matrix, number_line, j);
-                var option = options(line_arr, column_arr, square_arr);
-                arr_1 = arr_1 + option.join(''); // добавляем значения в строку
+            count_zero++;
+            var line_arr = searching_in_line(matrix, number_line);
+            var column_arr = searching_in_column(matrix, j);
+            var square_arr = searching_in_square(matrix, number_line, j);
+            var option = options(line_arr, column_arr, square_arr);
+            arr_1 = arr_1 + option.join(''); // добавляем значения в строку
         }
     }
 
@@ -239,7 +292,7 @@ function algoritm_3 (matrix, number_line, number_column) { //алгоритм д
                     var option = options(line_arr, column_arr, square_arr);
                     for (var m = 0; m < option.length; m++){
                         if ( option [m] === n){
-                                matrix[number_line][j] = n;
+                            matrix[number_line][j] = n;
                         }
                     }
 
@@ -248,7 +301,7 @@ function algoritm_3 (matrix, number_line, number_column) { //алгоритм д
 
         }
     }
-return matrix;
+    return matrix;
 
 }
 
@@ -269,6 +322,103 @@ function transp(matrix) { //транспонирование матрицы
     return solve_matrixT;
 
 }
+
+///////////  Проверка на правильное выполнение матрицы   /////////////////////
+function testMatrix(array) {  //Данная функция выводит true, если судоку решена правильно, false, если нет.
+
+    //Проверка строк на наличие нулей
+    for(var i=0; i<9; i++){
+        if(array[i].includes(0))   return false;    //Если i-ая строка водержит 0, сразу выводим false функции testMatrix()
+        for(var val=1; val<=9; val++){              //Проверяем, присутствует ли каждая цифра от 1 до 9 лишь единожды
+            var lengthNew = array[i].join('').replace(String(val),'').length;
+            var length_arr = array[i].join('').length;
+            if(length_arr - lengthNew != 1){
+                return false;  //если цифра присутствует больше одного раза выводим false функции testMatrix()
+            }
+        }
+    }
+
+    array = transp(array);  //Производим траспонирование матрицы и осуществляем те же операции, что и выше
+
+    for(var i=0; i<9; i++){
+        if(array[i].includes(0))   return false;
+        for(var val=1; val<=9; val++){
+            if(array[i].join('').length - array[i].join('').replace(String(val),'').length != 1){
+                return false;
+            }
+        }
+    }
+
+    var arr = [[],[],[]];       //Массив, соответствующий квадрату 3 на 3.
+    for(var i=0; i<3; i++){     //Координата квадрата 3 на 3 (по строке)
+        for(var j=0; j<3; j++){ //Вторая координата квадрата 3 на 3 (по столбцу)
+
+            for(var n=0; n<3; n++){     //Запись соответствующего квадрата с кооринатами [i][j] в массив arr
+                for(var m=0; m<3; m++){
+                    arr[n][m] = array[3*i+n][3*j+m];
+                }
+            }
+            var stringArr = arr[0].join('')+arr[1].join('')+arr[2].join('');    //Преобразование массива в строку
+            for(var val=1; val<=9; val++){                                      //Проверка, встечаются ли все символы в квадрате лишь единожды
+                if(stringArr.length - stringArr.replace(String(val),'').length != 1){
+                    return false;   //если нет, выводим false из функции
+                }
+            }
+        }
+    }
+
+    return true; //Если всё выполнилось, то воводим true
+
+}
+
+function last (matrix, number_line, number_column ) {
+
+    var count = 0;
+    var arr = [];
+
+
+    for(var i=0; i<9; i+=3){  // метод поиска по квадратам
+
+        for(var j=0; j<9; j+=3){
+
+            count = 0;
+
+            for(var n=0; n < 3; n++) {
+                for(var m=0; m < 3; m++) {
+
+                    if  (count > 0){
+
+                        continue;
+                    }
+
+                    var line_arr = searching_in_line(matrix, i+n);
+                    var column_arr = searching_in_column(matrix, j +m);
+                    var square_arr = searching_in_square(matrix, i+n, j+m);
+                    var option = options(line_arr, column_arr, square_arr);
+
+                    if (matrix [i+n][j+m] == 0) {
+
+                        if (option.length === 2){
+                            count++;
+                            arr[arr.length] = [];
+                            arr[arr.length-1][0] = i+n;
+                            arr[arr.length-1][1] = j+m;
+                            arr[arr.length-1].push(option[0]);
+                            arr[arr.length-1].push(option[1]);
+                        }
+
+                    }
+                }
+            }
+
+        }
+    }
+    return arr;
+}
+
+
+
+
 
 
 
